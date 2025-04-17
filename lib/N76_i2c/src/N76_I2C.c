@@ -31,7 +31,7 @@ uint8_x txBuffer[I2C_BUFFER_LEN]; // tx buffer array
 uint8_t timeOut(void)
 {
     _delay_us(100);
-    if (++t > 10)
+    if (++t > timeout_count)
         return true;
     return false;
 }
@@ -59,23 +59,23 @@ uint8_t I2C_beginTransmission(uint8_t addr)
     set_STA;
     clr_SI;
 
-    t = 0;
+    t = 0; // reset timeout
     // wait start condittion is sent - EV5
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return 2;
+            return 2; //
     ////I2C_SR1; // clear I2C_SR1, SB
 
     // send slave address
     I2DAT = (addr << 1) | I2C_WRITE;
 
-    t = 0;
+    t = 0; // reset timeout
     // wait slave address is sent - EV6
     clr_STA;
     clr_SI;
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return 3;
+            return 3; //
 
     return 0;
 }
@@ -105,12 +105,12 @@ uint8_t I2C_endTransmission(void)
         I2DAT = txBuffer[i];
 
         // wait until the transfer finished - EV 8_2
-        t = 0;
+        t = 0; // reset timeout
         clr_STA;
         clr_SI;
         while (inbit(I2CON, SI) == 0)
             if (timeOut())
-                return 1;
+                return 1; //
     }
 
     // set stop condition
@@ -118,16 +118,16 @@ uint8_t I2C_endTransmission(void)
     set_SI;
 
     // Wait to make sure that STOP control bit has been cleared
-    t = 0;
+    t = 0; // reset timeout
     while (inbit(I2CON, STO) == 1)
         if (timeOut())
-            return 3;
+            return 3; //
 
     // Re-Enable Acknowledgement to be ready for another reception
     ////setb(I2C_CR2, ACK); // Enable acknowledgement
     /////clrb(I2C_CR2, POS); // acknowledgement for current byte
 
-    return 0;
+    return 0; //
 }
 //-----------------------------------------------------------------------------------------------------------
 uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
@@ -147,10 +147,10 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     clr_SI;
 
     // wait start condittion is sent - EV5
-    t = 0;
+    t = 0; // reset timeout
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return 2;
+            return 2; //
 
     // send slave address
     I2DAT = (addr << 1) | I2C_READ;
@@ -158,10 +158,10 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     clr_SI;
 
     // Wait on ADDR flag to be set EV 6_3 (ADDR is still not cleared at this level
-    t = 0;
+    t = 0; // reset timeout
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return 3;
+            return 3; //
 
     // receive len - 1 byte
     for (i = 0; i < rxBufferLength - 1; i++)
@@ -170,10 +170,10 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
         set_AA;
         clr_SI;
 
-        t = 0;
+        t = 0; // reset timeout
         while (inbit(I2CON, SI) == 0)
             if (timeOut())
-                return 4;
+                return 4; //
         // rxBuffer[i] = I2DAT;
         rxBuffer[i] = I2DAT;
     }
@@ -182,10 +182,10 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     clr_AA;
     clr_SI;
     // Poll RXNE
-    t = 0;
+    t = 0; // reset timeout
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return 5;
+            return 5; //
     rxBuffer[rxBufferLength - 1] = I2DAT;
 
     // set stop after ADDR is cleared
@@ -193,15 +193,15 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     clr_SI;
 
     // Wait to make sure that STOP control bit has been cleared
-    t = 0;
+    t = 0; // reset timeout
     while (inbit(I2CON, STO) == 1)
         if (timeOut())
-            return 6;
+            return 6; //
     // Re-Enable Acknowledgement to be ready for another reception
     // setb(I2C_CR2, ACK); // Enable acknowledgement
     // clrb(I2C_CR2, POS); // acknowledgement for current byte
 
-    return 0;
+    return 0; //
 }
 //-----------------------------------------------------------------------------------------------------------
 uint8_t I2C_read(void)

@@ -19,7 +19,7 @@
 #define I2C_CLOCK       0x27 // Fclk = Fsys / (4*(prescalar + 1))
 #define I2C_ACK         0U
 #define I2C_NACK        1U
-#define timeout_count   1000U
+#define timeout_count   10U
 
 // master
 #define I2C_MT_START    0x01
