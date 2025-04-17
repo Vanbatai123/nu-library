@@ -1,9 +1,13 @@
-/*--------------------------------------------------------------------------
-N76E003.H
-// it for SDCC
-Header file for Nuvoton N76E003
---------------------------------------------------------------------------*/
-
+/**
+ * @file N76E003.h
+ * @author tai.van (taivb.6dof@gmail.com)
+ * @brief Nuvoton register definition for SDCC
+ * @version 0.1
+ * @date 2025-04-16
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 
 # define SBIT(name, addr, bit)  __sbit  __at(addr+bit)             name
 # define SFR(name, addr)        __sfr   __at(addr)                 name

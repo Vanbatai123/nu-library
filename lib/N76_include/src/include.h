@@ -1,8 +1,14 @@
-/*
- * include.h
- * Created: 2018/08/22
- * Author: Van_BasTai
-*/
+/**
+ * @file include.h
+ * @author tai.van (taivb.6dof@gmail.com)
+ * @brief define some macro, datatype
+ *          Pinmode, delay function
+ * @version 0.1
+ * @date 2022-02-28
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 
 #include "N76E003.h"
 
@@ -11,7 +17,6 @@
 #endif
 
 typedef unsigned char   byte;
-
 typedef signed char     int8_t;
 typedef signed short    int16_t;
 typedef signed long     int32_t;
@@ -34,8 +39,8 @@ typedef enum { false, true } bool;
 #define daobit(reg, bit)    reg ^= (1<<bit)
 #define inbit(reg, bit)     (reg&(1<<bit)) >> bit
 
-#define sei()               setb(IE, EA);  /* enable interrupts */
-#define cli()               clrb(IE, EA);  /* disable interrupts */
+#define sei()               setb(IE, EA); // enable interrupts
+#define cli()               clrb(IE, EA); // disable interrupts
 
 #define setbAP(reg, bit) \
     cli();               \
@@ -51,14 +56,18 @@ typedef enum { false, true } bool;
     reg &= ~(1 << bit);  \
     sei();
 
-// #define true               1
-// #define false              0
-
+/**
+ * @brief Base system
+ * 
+ */
 #define BIN                 2
 #define DEC                 10
 #define HEX                 16
 
-// pin mode
+/**
+ * @brief Pin mode
+ * 
+ */
 #define QUASI               0x00
 #define OUTPUT_PP           0x01
 #define INPUT               0x10
@@ -72,15 +81,29 @@ typedef enum { false, true } bool;
 #define XRAM_I2C_TX_BUFF    0x02C0
 #define XRAM_I2C_RX_BUFF    0x02E0
 
-#define CONCAT2(a,b) a##b
+#define CONCAT2(a,b)        a##b
 
-// mode: QUASI, OUTPUT_PP, INPUT, OUTPUT_OD
+/**
+ * @brief Pin mode
+ * QUASI, OUTPUT_PP, INPUT, OUTPUT_OD
+ * 
+ */
 #define pinMode(PORTx, BITx, mode)                     \
     if(mode & 0xF0) setb(CONCAT2(PORTx,  m1), BITx); else clrb(CONCAT2(PORTx,  m1), BITx); \
     if(mode & 0x0F) setb(CONCAT2(PORTx,  m2), BITx); else clrb(CONCAT2(PORTx,  m2), BITx);
 
-
+/**
+ * @brief delay ms using timer 3
+ * 
+ * @param __ms 
+ */
 void _delay_ms(uint32_t __ms);
+
+/**
+ * @brief delay us using nop
+ * 
+ * @param _us 
+ */
 void _delay_us(uint32_t _us);
 
 

@@ -1,44 +1,49 @@
-/*
- * N76E_i2c.c
- * Created: 2022/02/03
- * Author: Van_BasTai
+/**
+ * @file N76_I2C.c
+ * @author Van_BasTai (taivb.6dof@gmail.com)
+ * @brief Nuvoton N76/MS51 I2C library
+ * @version 0.1
+ * @date 2022-02-03
+ * 
+ * @copyright Copyright (c) 2025
+ * 
  */
 
 #include <include.h>
 #include <N76_I2C.h>
 
-uint8_x t = 0; // variable for timeout
+uint8_x t = 0;                    // variable for timeout
 
-// rx buffer variable/array
-uint8_x rxBufferIndex;
-uint8_x rxBufferLength;
-uint8_x rxBuffer[I2C_BUFFER_LEN];
+uint8_x rxBufferIndex;            // rx buffer index
+uint8_x rxBufferLength;           // rx buffer length
+uint8_x rxBuffer[I2C_BUFFER_LEN]; // rx buffer array
 
-// tx buffer variable/array
-uint8_x txBufferIndex;
-uint8_x txBufferLength;
-uint8_x txBuffer[I2C_BUFFER_LEN];
+uint8_x txBufferIndex;            // tx buffer length
+uint8_x txBufferLength;           // tx buffer length
+uint8_x txBuffer[I2C_BUFFER_LEN]; // tx buffer array
 
-uint8_x timeOut(void)
+//-----------------------------------------------------------------------------------------------------------
+/**
+ * @brief I2C time out function
+ * 
+ * @return uint8_t 
+ */
+uint8_t timeOut(void)
 {
     _delay_us(100);
     if (++t > 10)
         return true;
     return false;
 }
-
+//-----------------------------------------------------------------------------------------------------------
 void I2C_begin(void)
 {
-    P13_OpenDrain_Mode;
-    P14_OpenDrain_Mode;
-
-    /* Set I2C clock rate */
-    I2CLK = I2C_CLOCK; // I2C clock = Fsys/(4*(I2CLK+1))
-
-    /* Enable I2C */
-    set_I2CEN;
+    P13_OpenDrain_Mode; // Open drain for SDA
+    P14_OpenDrain_Mode; // Open drain for SCL
+    I2CLK = I2C_CLOCK;  // Set I2C clock rate - I2C clock = Fsys/(4*(I2CLK+1))
+    set_I2CEN;          // Enable I2C
 }
-
+//-----------------------------------------------------------------------------------------------------------
 uint8_t I2C_beginTransmission(uint8_t addr)
 {
     txBufferIndex = 0;
@@ -74,13 +79,13 @@ uint8_t I2C_beginTransmission(uint8_t addr)
 
     return 0;
 }
-
+//-----------------------------------------------------------------------------------------------------------
 void I2C_write(uint8_t data)
 {
     txBuffer[txBufferIndex++] = data;
     txBufferLength = txBufferIndex;
 }
-
+//-----------------------------------------------------------------------------------------------------------
 void I2C_writeBuffer(uint8_t *data, uint8_t len)
 {
     uint8_t i = 0;
@@ -89,7 +94,7 @@ void I2C_writeBuffer(uint8_t *data, uint8_t len)
         I2C_write(data[i]);
     }
 }
-
+//-----------------------------------------------------------------------------------------------------------
 uint8_t I2C_endTransmission(void)
 {
     uint8_t i;
@@ -124,7 +129,7 @@ uint8_t I2C_endTransmission(void)
 
     return 0;
 }
-
+//-----------------------------------------------------------------------------------------------------------
 uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
 {
     uint8_t i;
@@ -198,7 +203,7 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
 
     return 0;
 }
-
+//-----------------------------------------------------------------------------------------------------------
 uint8_t I2C_read(void)
 {
     int8_t value = -1;
@@ -210,8 +215,9 @@ uint8_t I2C_read(void)
     }
     return value;
 }
-
+//-----------------------------------------------------------------------------------------------------------
 int16_t I2C_available(void)
 {
     return rxBufferLength - rxBufferIndex;
 }
+//-----------------------------------------------------------------------------------------------------------

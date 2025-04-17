@@ -1,8 +1,14 @@
-/*
- * default Test RS485
- * Created: 2023/08/23
- * Author: taivb
+/**
+ * @file Test_RS485.c
+ * @author Van_BasTai (taivb.6dof@gmail.com)
+ * @brief Test RS485 function
+ * @version 0.1
+ * @date 2025-04-17
+ * 
+ * @copyright Copyright (c) 2025
+ * 
  */
+
 #include <include.h>
 #include <N76_uart0.h>
 #include <N76_RS485.h>

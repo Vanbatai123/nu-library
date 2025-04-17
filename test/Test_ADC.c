@@ -1,7 +1,12 @@
-/*
- * test ADC
- * Created: 2023/03/30
- * Author: Van_BasTai
+/**
+ * @file Test_ADC.c
+ * @author Van_BasTai (taivb.6dof@gmail.com)
+ * @brief Test ADC function of Nuvoton N76/MS51
+ * @version 0.1
+ * @date 2025-04-17
+ *
+ * @copyright Copyright (c) 2025
+ *
  */
 
 #include <include.h>
@@ -9,6 +14,10 @@
 
 uint16_t value;
 
+/**
+ * @brief Main function
+ *
+ */
 void main(void)
 {
     // P11_Input_Mode;
@@ -42,6 +51,10 @@ void main(void)
     }
 }
 
+/**
+ * @brief ADC interrupt function
+ *
+ */
 ISR(ADC_INT_FUCTION, INTERRUPT_ADC)
 {
     value = (ADCRH << 4) | ADCRL;
