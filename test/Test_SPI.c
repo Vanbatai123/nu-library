@@ -1,7 +1,12 @@
-/*
- * test SPI
- * Created: 2023/03/30
- * Author: Van_BasTai
+/**
+ * @file Test_SPI.c
+ * @author Van_BasTai (taivb.6dof@gmail.com)
+ * @brief Test SPI using MAX7219
+ * @version 0.1
+ * @date 2025-04-17
+ * 
+ * @copyright Copyright (c) 2025
+ * 
  */
 
 #include <include.h>

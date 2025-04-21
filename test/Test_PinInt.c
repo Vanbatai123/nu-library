@@ -1,7 +1,12 @@
-/*
- * test Pin interrupt
- * Created: 2021/10/23
- * Author: taivb
+/**
+ * @file Test_PinInt.c
+ * @author Van_BasTai (taivb.6dof@gmail.com)
+ * @brief Test pin interrupt
+ * @version 0.1
+ * @date 2025-04-17
+ * 
+ * @copyright Copyright (c) 2025
+ * 
  */
 
 #include <include.h>

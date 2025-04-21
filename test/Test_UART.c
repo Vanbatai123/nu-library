@@ -1,8 +1,14 @@
-/*
- * default Test UART
- * Created: 2023/03/27
- * Author: taivb
+/**
+ * @file Test_UART.c
+ * @author Van_BasTai (taivb.6dof@gmail.com)
+ * @brief Test UART read/write function
+ * @version 0.1
+ * @date 2025-04-17
+ * 
+ * @copyright Copyright (c) 2025
+ * 
  */
+
 #include <include.h>
 #include <N76_uart0.h>
 

@@ -1,7 +1,12 @@
-/*
- * include.c
- * Created: 2022/02/28
- * Author: taivb
+/**
+ * @file include.c
+ * @author tai.van (taivb.6dof@gmail.com)
+ * @brief delay function declaration
+ * @version 0.1
+ * @date 2022-02-28
+ * 
+ * @copyright Copyright (c) 2025
+ * 
  */
 
 #include "include.h"

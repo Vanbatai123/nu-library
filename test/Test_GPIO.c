@@ -1,7 +1,12 @@
-/*
- * default main file
- * Created: 2023/03/26
- * Author: taivb
+/**
+ * @file Test_GPIO.c
+ * @author Van_BasTai (taivb.6dof@gmail.com)
+ * @brief Test GPIO/UART function
+ * @version 0.1
+ * @date 2025-04-17
+ * 
+ * @copyright Copyright (c) 2025
+ * 
  */
 
 #include <include.h>
@@ -9,6 +14,10 @@
 
 int a = 0;
 
+/**
+ * @brief Main function
+ * 
+ */
 void main(void)
 {
     setb(P1, 6);

@@ -1,7 +1,12 @@
-/*
- * N76_RS485.c
- * Created: 2023/08/23
- * Author: Van_BasTai
+/**
+ * @file N76_RS485.c
+ * @author Van_BasTai (taivb.6dof@gmail.com)
+ * @brief RS485 library
+ * @version 0.1
+ * @date 2025-04-17
+ * 
+ * @copyright Copyright (c) 2025
+ * 
  */
 
 #include <include.h>

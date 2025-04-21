@@ -1,12 +1,18 @@
-/*
- * N76E_SPI.c
- * Created: 2022/02/03
- * Author: Van_BasTai
+/**
+ * @file N76_SPI.h
+ * @author Van_BasTai (taivb.6dof@gmail.com)
+ * @brief Nuvoton N76/MS51 SPI library
+ * @version 0.1
+ * @date 2023-03-30
+ * 
+ * @copyright Copyright (c) 2025
+ * 
  */
 
 #include <include.h>
 #include <N76_SPI.h>
 
+//-----------------------------------------------------------------------------------------------------------
 void SPI_begin(uint8_t spi_mode)
 {
     setb(SPSR, DISMODF); // SS pin user define
@@ -48,7 +54,7 @@ void SPI_begin(uint8_t spi_mode)
         // SPCR |= (1 << SPIE) | (1 << SPIE); // enable spi & interrupt for slave
     }
 }
-
+//-----------------------------------------------------------------------------------------------------------
 uint8_t SPI_transfer(uint8_t data)
 {
     SPDR = data;
@@ -58,20 +64,21 @@ uint8_t SPI_transfer(uint8_t data)
     clrb(SPSR, SPIF);
     return SPDR;
 }
-
+//-----------------------------------------------------------------------------------------------------------
 // uint16_t SPI_transfer16(uint16_t data)
 // {
 //      return 0;
 // }
 // void SPI_transferBuf(void *buf, uint16_t count)
 // {
-
+//-----------------------------------------------------------------------------------------------------------
 // }
+//-----------------------------------------------------------------------------------------------------------
 // void SPI_end()
 // {
 
 // }
-
+//-----------------------------------------------------------------------------------------------------------
 void SPI_setBitOrder(uint8_t bitOrder)
 {
     if (bitOrder == LSBFIRST)
@@ -79,21 +86,24 @@ void SPI_setBitOrder(uint8_t bitOrder)
     else
         clrb(SPCR, LSBFE);
 }
-
+//-----------------------------------------------------------------------------------------------------------
 void SPI_setDataMode(uint8_t dataMode)
 {
     SPCR = (SPCR & ~SPI_MODE_MASK) | dataMode;
 }
-
+//-----------------------------------------------------------------------------------------------------------
 void SPI_setClockDivider(uint8_t clockDiv)
 {
     SPCR = (SPCR & ~SPI_CLOCK_MASK) | (clockDiv & SPI_CLOCK_MASK);
 }
-
+//-----------------------------------------------------------------------------------------------------------
 void SPI_attachInterrupt(void)
 {
-}
 
-void SPI_aetachInterrupt(void)
-{
 }
+//-----------------------------------------------------------------------------------------------------------
+void SPI_detachInterrupt(void)
+{
+
+}
+//-----------------------------------------------------------------------------------------------------------
