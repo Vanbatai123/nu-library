@@ -49,35 +49,29 @@ uint8_t I2C_beginTransmission(uint8_t addr)
     txBufferIndex = 0;
     txBufferLength = 0;
 
-    // check I2C is free?
-    /*t = 0;
-    while (inbit(I2C_SR3, BUSY) == 1)
-        if (timeOut())
-            return 1;
-*/
     // start condittion - S
     set_STA;
     clr_SI;
 
     t = 0; // reset timeout
-    // wait start condittion is sent - EV5
+    // wait start condittion is sent
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return 2; //
+            return I2C_START_FAIL;
     ////I2C_SR1; // clear I2C_SR1, SB
 
     // send slave address
     I2DAT = (addr << 1) | I2C_WRITE;
 
     t = 0; // reset timeout
-    // wait slave address is sent - EV6
+    // wait slave address is sent
     clr_STA;
     clr_SI;
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return 3; //
+            return I2C_SLAVE_ADDR_FAIL;
 
-    return 0;
+    return I2C_OK;
 }
 //-----------------------------------------------------------------------------------------------------------
 void I2C_write(uint8_t data)
@@ -110,7 +104,7 @@ uint8_t I2C_endTransmission(void)
         clr_SI;
         while (inbit(I2CON, SI) == 0)
             if (timeOut())
-                return 1; //
+                return I2C_WRITE_FAIL;
     }
 
     // set stop condition
@@ -121,13 +115,9 @@ uint8_t I2C_endTransmission(void)
     t = 0; // reset timeout
     while (inbit(I2CON, STO) == 1)
         if (timeOut())
-            return 3; //
+            return I2C_STOP_FAIL;
 
-    // Re-Enable Acknowledgement to be ready for another reception
-    ////setb(I2C_CR2, ACK); // Enable acknowledgement
-    /////clrb(I2C_CR2, POS); // acknowledgement for current byte
-
-    return 0; //
+    return I2C_OK;
 }
 //-----------------------------------------------------------------------------------------------------------
 uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
@@ -136,32 +126,26 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     rxBufferLength = len;
     rxBufferIndex = 0;
 
-    // check I2C is free?
-    /*t = 0;
-    while (inbit(I2C_SR3, BUSY) == 1)
-        if (timeOut())
-            return 1;
-*/
     // start condittion - S
     set_STA;
     clr_SI;
 
-    // wait start condittion is sent - EV5
+    // wait start condittion is sent
     t = 0; // reset timeout
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return 2; //
+            return I2C_START_FAIL;
 
     // send slave address
     I2DAT = (addr << 1) | I2C_READ;
     clr_STA;
     clr_SI;
 
-    // Wait on ADDR flag to be set EV 6_3 (ADDR is still not cleared at this level
+    // Wait on ADDR flag to be set (ADDR is still not cleared at this level)
     t = 0; // reset timeout
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return 3; //
+            return I2C_SLAVE_ADDR_FAIL;
 
     // receive len - 1 byte
     for (i = 0; i < rxBufferLength - 1; i++)
@@ -173,8 +157,7 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
         t = 0; // reset timeout
         while (inbit(I2CON, SI) == 0)
             if (timeOut())
-                return 4; //
-        // rxBuffer[i] = I2DAT;
+                return I2C_READ_FAIL;
         rxBuffer[i] = I2DAT;
     }
 
@@ -185,7 +168,7 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     t = 0; // reset timeout
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return 5; //
+            return I2C_READ_ACK_FAIL;
     rxBuffer[rxBufferLength - 1] = I2DAT;
 
     // set stop after ADDR is cleared
@@ -196,12 +179,12 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     t = 0; // reset timeout
     while (inbit(I2CON, STO) == 1)
         if (timeOut())
-            return 6; //
+            return I2C_STOP_FAIL;
     // Re-Enable Acknowledgement to be ready for another reception
     // setb(I2C_CR2, ACK); // Enable acknowledgement
     // clrb(I2C_CR2, POS); // acknowledgement for current byte
 
-    return 0; //
+    return I2C_OK;
 }
 //-----------------------------------------------------------------------------------------------------------
 uint8_t I2C_read(void)

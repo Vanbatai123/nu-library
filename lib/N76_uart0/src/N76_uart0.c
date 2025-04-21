@@ -23,10 +23,10 @@ void UART0_begin(uint8_t baud)
     P06_Quasi_Mode; // Setting UART pin as Quasi mode for transmit
     P07_Quasi_Mode; // Setting UART pin as Quasi mode for transmit
 
-    TH1 = baud;   // set baudrate
-    SCON = 0x50;  // UART0 Mode1,REN=1,TI=1 
-    TMOD |= 0x20; // Timer1 Mode1 
-    set_SMOD;     // UART0 Double Rate Enable
+    TH1 = baud;         // set baudrate
+    SCON = (1 << REN);  // UART0 Mode1,REN=1
+    set_M1_T1;          // Mode 2: 8-bit Timer/Counter with auto-reload from TH1
+    set_SMOD;           // UART0 Double Rate Enable
     set_T1M;
     clr_BRCK; // Serial port 0 baud rate clock source = Timer1
     set_TR1;
@@ -71,9 +71,9 @@ void UART0_printNum(int32_t num, uint8_t base)
     while (num > 0) // convert to base number and add to dis array
     {
         if (num % base >= 10)
-            dis[max] = num % base + 55; //
+            dis[max] = num % base + 55; // for hex ABCDEF
         else
-            dis[max] = num % base + 48; //
+            dis[max] = num % base + 48; // number 0
 
         num = num / base;
         max++;

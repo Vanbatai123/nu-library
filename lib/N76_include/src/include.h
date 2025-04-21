@@ -34,10 +34,10 @@ typedef __xdata unsigned long       uint32_x;
 typedef enum { false, true } bool;
 // typedef void (*voidFuncPtr)(void);
 
-#define setb(reg, bit)      reg |= (1<<bit)
-#define clrb(reg, bit)      reg &= ~(1<<bit)
-#define daobit(reg, bit)    reg ^= (1<<bit)
-#define inbit(reg, bit)     (reg&(1<<bit)) >> bit
+#define setb(reg, bit)      (reg |= (1<<bit))
+#define clrb(reg, bit)      (reg &= ~(1<<bit))
+#define daobit(reg, bit)    (reg ^= (1<<bit))
+#define inbit(reg, bit)     ((reg&(1<<bit)) >> bit)
 
 #define sei()               setb(IE, EA); // enable interrupts
 #define cli()               clrb(IE, EA); // disable interrupts

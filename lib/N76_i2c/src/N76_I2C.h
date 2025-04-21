@@ -26,6 +26,16 @@
 
 #define I2C_BUFFER_LEN  32U
 
+// I2C error code
+
+#define I2C_OK                  0x00
+#define I2C_WRITE_FAIL          0x01
+#define I2C_START_FAIL          0x02
+#define I2C_SLAVE_ADDR_FAIL     0x03
+#define I2C_READ_FAIL           0x04
+#define I2C_READ_ACK_FAIL       0x05
+#define I2C_STOP_FAIL           0x06
+
 //-----------------------------------------------------------------------------------------------------------
 /**
  * @brief I2C configured as master
