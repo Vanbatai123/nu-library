@@ -88,7 +88,7 @@ uint8_t I2C_beginTransmission(uint8_t addr)
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
             break;
-    if (I2STAT != I2C_M_Tx_ADDR_ACK) // Check status value after every step
+    if (I2STAT != I2C_M_Tx_ADDR_ACK) // Check ACK after send slave address for writing
         return I2STAT;
     
     return I2C_OK;
@@ -125,7 +125,7 @@ uint8_t I2C_endTransmission(void)
         while (inbit(I2CON, SI) == 0)
             if (timeOut())
                 break;
-        if (I2STAT != I2C_M_Tx_DATA_ACK) // Check transmitted data ACK status
+        if (I2STAT != I2C_M_Tx_DATA_ACK) // Check ACK after send data
             return I2STAT;
     }
 
@@ -148,7 +148,7 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     rxBufferLength = len;
     rxBufferIndex = 0;
 
-    // start condittion - S
+    // Send START condition
     set_STA;
     clr_SI;
 
@@ -170,7 +170,7 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
             break;
-    if (I2STAT != I2C_M_Rx_ADDR_ACK) // Check address send ack status
+    if (I2STAT != I2C_M_Rx_ADDR_ACK) // Check ACK after send slave address for reading
         return I2STAT;
 
     // receive len - 1 byte
@@ -184,7 +184,7 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
         while (inbit(I2CON, SI) == 0)
             if (timeOut())
                 break;
-        if (I2STAT != I2C_M_Rx_DATA_ACK) // Check received data ACK status
+        if (I2STAT != I2C_M_Rx_DATA_ACK) // Check ACK after received data
             return I2STAT;
         rxBuffer[i] = I2DAT;
     }
@@ -192,12 +192,11 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     // clear ACK
     clr_AA;
     clr_SI;
-    // Poll RXNE
     t = 0; // reset timeout
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
             break;
-    if (I2STAT != I2C_M_Rx_DATA_NACK) // Check received data NACK status
+    if (I2STAT != I2C_M_Rx_DATA_NACK) // Check NACK after received data for last byte
         return I2STAT;
     // read last byte
     rxBuffer[rxBufferLength - 1] = I2DAT;
