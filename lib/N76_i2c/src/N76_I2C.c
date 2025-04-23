@@ -48,8 +48,25 @@ uint8_t I2C_beginTransmission(uint8_t addr)
 {
     txBufferIndex = 0;
     txBufferLength = 0;
+    
+    // Check if I2C is busy
+    while(inbit(I2CON, SI) != 0) // If SI still keep 1
+    {
+        if (I2STAT != I2C_BUS_RELEASE || I2STAT != I2C_BUS_ERROR) // Check bus status if bus error，first send stop
+        {
+            set_STO; // Check bus status if bus error，first send stop
+        }
+        clr_SI;
+        if(inbit(I2CON, SI) != 0) // If SI still keep 1
+        {
+            clr_I2CEN; // please first disable I2C.
+            set_I2CEN; // Then enable I2C for clear SI.
+            clr_SI;
+            clr_I2CEN; // At last disable I2C for next a new transfer
+        } 
+    }
 
-    // start condittion - S
+    // send START
     set_STA;
     clr_SI;
 
@@ -57,10 +74,11 @@ uint8_t I2C_beginTransmission(uint8_t addr)
     // wait start condittion is sent
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return I2C_START_FAIL;
-    ////I2C_SR1; // clear I2C_SR1, SB
+            break;
+    if (I2STAT != I2C_START) // Check status value after every step
+        return I2STAT;
 
-    // send slave address
+    // Send slave address
     I2DAT = (addr << 1) | I2C_WRITE;
 
     t = 0; // reset timeout
@@ -69,8 +87,10 @@ uint8_t I2C_beginTransmission(uint8_t addr)
     clr_SI;
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return I2C_SLAVE_ADDR_FAIL;
-
+            break;
+    if (I2STAT != I2C_M_Tx_ADDR_ACK) // Check ACK after send slave address for writing
+        return I2STAT;
+    
     return I2C_OK;
 }
 //-----------------------------------------------------------------------------------------------------------
@@ -104,12 +124,14 @@ uint8_t I2C_endTransmission(void)
         clr_SI;
         while (inbit(I2CON, SI) == 0)
             if (timeOut())
-                return I2C_WRITE_FAIL;
+                break;
+        if (I2STAT != I2C_M_Tx_DATA_ACK) // Check ACK after send data
+            return I2STAT;
     }
 
     // set stop condition
     set_STO;
-    set_SI;
+    clr_SI;
 
     // Wait to make sure that STOP control bit has been cleared
     t = 0; // reset timeout
@@ -126,7 +148,7 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     rxBufferLength = len;
     rxBufferIndex = 0;
 
-    // start condittion - S
+    // Send START condition
     set_STA;
     clr_SI;
 
@@ -134,7 +156,9 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     t = 0; // reset timeout
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return I2C_START_FAIL;
+            break;
+    if (I2STAT != I2C_START) // Check start sent status
+        return I2STAT;
 
     // send slave address
     I2DAT = (addr << 1) | I2C_READ;
@@ -145,7 +169,9 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     t = 0; // reset timeout
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return I2C_SLAVE_ADDR_FAIL;
+            break;
+    if (I2STAT != I2C_M_Rx_ADDR_ACK) // Check ACK after send slave address for reading
+        return I2STAT;
 
     // receive len - 1 byte
     for (i = 0; i < rxBufferLength - 1; i++)
@@ -157,18 +183,22 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
         t = 0; // reset timeout
         while (inbit(I2CON, SI) == 0)
             if (timeOut())
-                return I2C_READ_FAIL;
+                break;
+        if (I2STAT != I2C_M_Rx_DATA_ACK) // Check ACK after received data
+            return I2STAT;
         rxBuffer[i] = I2DAT;
     }
 
     // clear ACK
     clr_AA;
     clr_SI;
-    // Poll RXNE
     t = 0; // reset timeout
     while (inbit(I2CON, SI) == 0)
         if (timeOut())
-            return I2C_READ_ACK_FAIL;
+            break;
+    if (I2STAT != I2C_M_Rx_DATA_NACK) // Check NACK after received data for last byte
+        return I2STAT;
+    // read last byte
     rxBuffer[rxBufferLength - 1] = I2DAT;
 
     // set stop after ADDR is cleared
@@ -180,9 +210,6 @@ uint8_t I2C_requestFrom(uint8_t addr, uint8_t len)
     while (inbit(I2CON, STO) == 1)
         if (timeOut())
             return I2C_STOP_FAIL;
-    // Re-Enable Acknowledgement to be ready for another reception
-    // setb(I2C_CR2, ACK); // Enable acknowledgement
-    // clrb(I2C_CR2, POS); // acknowledgement for current byte
 
     return I2C_OK;
 }

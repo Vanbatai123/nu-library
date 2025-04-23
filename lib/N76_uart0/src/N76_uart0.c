@@ -24,7 +24,7 @@ void UART0_begin(uint8_t baud)
     P07_Quasi_Mode; // Setting UART pin as Quasi mode for transmit
 
     TH1 = baud;         // set baudrate
-    SCON = (1 << REN);  // UART0 Mode1,REN=1
+    SCON = (1 << SM1) | (1 << REN);  // UART0 Mode1,REN=1
     set_M1_T1;          // Mode 2: 8-bit Timer/Counter with auto-reload from TH1
     set_SMOD;           // UART0 Double Rate Enable
     set_T1M;
