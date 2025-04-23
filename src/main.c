@@ -1,7 +1,12 @@
-/*
- * test I2C project
- * Created: 2021/10/23
- * Author: taivb
+/**
+ * @file Test_I2C.c
+ * @author Van_BasTai (taivb.6dof@gmail.com)
+ * @brief Test I2C with DS1307 show UART0
+ * @version 0.1
+ * @date 2025-04-17
+ * 
+ * @copyright Copyright (c) 2025
+ * 
  */
 
 #include <include.h>
@@ -41,10 +46,15 @@ void main(void)
  */
 void readDS1307(void)
 {
-    I2C_beginTransmission(DS1307);
-    I2C_write((uint8_t)0x00);
-    I2C_endTransmission();
-    I2C_requestFrom(DS1307, NumberOfFields);
+    if(I2C_beginTransmission(DS1307) != I2C_OK)
+        UART0_println("I2C begin transmission failed!");
+
+    I2C_write((uint8_t)0x00); // reset pointer to 0x00
+    if(I2C_endTransmission() != I2C_OK)
+        UART0_println("I2C end transmission failed!");
+        
+    if(I2C_requestFrom(DS1307, NumberOfFields) != I2C_OK)
+        UART0_println("I2C request from failed!");
 
     second = bcd2dec(I2C_read() & 0x7f);
     minute = bcd2dec(I2C_read());
@@ -114,8 +124,9 @@ void printDigits(int digits)
 /* cài đặt thời gian cho DS1307 */
 void setTime(uint8_t hr, uint8_t min, uint8_t sec, uint8_t wd, uint8_t d, uint8_t mth, uint8_t yr)
 {
-    I2C_beginTransmission(DS1307);
-    I2C_write(0x00); // đặt lại pointer
+    if(I2C_beginTransmission(DS1307) != I2C_OK)
+        UART0_println("I2C begin transmission failed!");
+    I2C_write(0x00); // set pointer
     I2C_write(dec2bcd(sec));
     I2C_write(dec2bcd(min));
     I2C_write(dec2bcd(hr));
@@ -123,5 +134,6 @@ void setTime(uint8_t hr, uint8_t min, uint8_t sec, uint8_t wd, uint8_t d, uint8_
     I2C_write(dec2bcd(d));
     I2C_write(dec2bcd(mth));
     I2C_write(dec2bcd(yr));
-    I2C_endTransmission();
+    if(I2C_endTransmission() != I2C_OK)
+        UART0_println("I2C end transmission failed!");
 }
